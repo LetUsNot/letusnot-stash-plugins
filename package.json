@@ -1,0 +1,10 @@
+{
+  "name": "letusnot-stash-plugins",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stash plugin source index for LetUsNot plugins.",
+  "scripts": {
+    "sync": "node scripts/sync-plugins.mjs",
+    "build:site": "bash build_site.sh _site/main"
+  }
+}

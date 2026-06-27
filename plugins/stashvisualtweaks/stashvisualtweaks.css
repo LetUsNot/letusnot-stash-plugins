@@ -1,0 +1,184 @@
+/*
+ * Stash Visual Tweaks
+ *
+ * 1. Replaces the diagonal red/orange rating ribbon on cards with gold star
+ *    icons styled like the performer detail page rating control.
+ * 2. Right-aligns card popover icons (scene count, o-count, tag count, etc.).
+ */
+
+:root {
+  /* Five gold stars on a transparent strip (matches Stash .rating-stars gold) */
+  --svt-stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20' viewBox='0 0 100 20'%3E%3Cg fill='%23ffd700'%3E%3Cpath d='M10 1.5l2.2 5.6 6.1.5-4.6 3.8 1.4 6-5.1-3.2-5.1 3.2 1.4-6-4.6-3.8 6.1-.5z'/%3E%3Cpath d='M30 1.5l2.2 5.6 6.1.5-4.6 3.8 1.4 6-5.1-3.2-5.1 3.2 1.4-6-4.6-3.8 6.1-.5z'/%3E%3Cpath d='M50 1.5l2.2 5.6 6.1.5-4.6 3.8 1.4 6-5.1-3.2-5.1 3.2 1.4-6-4.6-3.8 6.1-.5z'/%3E%3Cpath d='M70 1.5l2.2 5.6 6.1.5-4.6 3.8 1.4 6-5.1-3.2-5.1 3.2 1.4-6-4.6-3.8 6.1-.5z'/%3E%3Cpath d='M90 1.5l2.2 5.6 6.1.5-4.6 3.8 1.4 6-5.1-3.2-5.1 3.2 1.4-6-4.6-3.8 6.1-.5z'/%3E%3C/g%3E%3C/svg%3E");
+  --svt-star-strip-width: 100px;
+  --svt-star-height: 18px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Rating banner → gold stars                                                 */
+/* -------------------------------------------------------------------------- */
+
+.grid-card .rating-banner,
+.movie-card-header .rating-banner,
+.image-card .rating-banner,
+.gallery-card .rating-banner {
+  /* Remove ribbon styling (avoid `background` shorthand — it clears image) */
+  background-color: transparent !important;
+  background-image: var(--svt-stars) !important;
+  background-repeat: no-repeat !important;
+  background-position: left center !important;
+  background-size: var(--svt-star-strip-width) var(--svt-star-height) !important;
+  box-shadow: none;
+  color: transparent !important;
+  font-size: 0 !important;
+  letter-spacing: 0;
+  line-height: 0;
+  overflow: hidden;
+  padding: 0 !important;
+  text-transform: none;
+  transform: none !important;
+  white-space: nowrap;
+
+  /* Top-left of thumbnail; fades on hover so the selection checkmark is clear */
+  left: 0.5rem;
+  top: 0.5rem;
+  bottom: auto;
+  height: var(--svt-star-height);
+  text-align: left;
+  z-index: 9;
+  transition: opacity 0.5s;
+
+  /* RatingBanner sets --rating-100 (0–100); clip strip to filled portion */
+  width: calc(var(--rating-100, 0) * 1px);
+  max-width: var(--svt-star-strip-width);
+  min-width: 0;
+}
+
+/* Legacy 1–5 class fallback when --rating-100 is unavailable */
+.grid-card .rating-banner.rating-1,
+.movie-card-header .rating-banner.rating-1,
+.image-card .rating-banner.rating-1,
+.gallery-card .rating-banner.rating-1 {
+  width: 20px;
+}
+
+.grid-card .rating-banner.rating-2,
+.movie-card-header .rating-banner.rating-2,
+.image-card .rating-banner.rating-2,
+.gallery-card .rating-banner.rating-2 {
+  width: 40px;
+}
+
+.grid-card .rating-banner.rating-3,
+.movie-card-header .rating-banner.rating-3,
+.image-card .rating-banner.rating-3,
+.gallery-card .rating-banner.rating-3 {
+  width: 60px;
+}
+
+.grid-card .rating-banner.rating-4,
+.movie-card-header .rating-banner.rating-4,
+.image-card .rating-banner.rating-4,
+.gallery-card .rating-banner.rating-4 {
+  width: 80px;
+}
+
+.grid-card .rating-banner.rating-5,
+.movie-card-header .rating-banner.rating-5,
+.image-card .rating-banner.rating-5,
+.gallery-card .rating-banner.rating-5 {
+  width: var(--svt-star-strip-width);
+}
+
+/* Hide stars on hover so the card checkmark can be used (stock ribbon behavior) */
+.grid-card:hover .rating-banner,
+.grid-card:active .rating-banner {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+/* Subtle shadow so stars read on light thumbnails */
+.grid-card .rating-banner {
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.85));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Right-align count / popover icons on cards                                 */
+/* -------------------------------------------------------------------------- */
+
+.card-popovers,
+.scene-popovers {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: flex-end !important;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Card types that ship with centered popovers in stock Stash */
+.scene-card .card-popovers,
+.performer-card .card-popovers,
+.studio-card .card-popovers,
+.tag-card .card-popovers,
+.group-card .card-popovers,
+.gallery-card .card-popovers,
+.image-card .card-popovers {
+  justify-content: flex-end !important;
+}
+
+/* Compact but readable spacing — gap between buttons, room for icon + count */
+.card-popovers,
+.scene-popovers {
+  gap: 0.2rem;
+}
+
+.card-popovers .btn,
+.scene-popovers .btn {
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.card-popovers .btn span,
+.scene-popovers .btn span {
+  margin-left: 0.1rem;
+}
+
+.card-popovers .fa-icon,
+.scene-popovers .fa-icon {
+  margin-left: 0;
+  margin-right: 0.35rem;
+}
+
+.card-popovers .btn .fa-icon:only-child,
+.scene-popovers .btn .fa-icon:only-child {
+  margin-right: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Rounded cards (enabled via plugin setting)                                 */
+/* -------------------------------------------------------------------------- */
+
+html[data-svt-rounded-cards="true"] .grid-card.card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+html[data-svt-rounded-cards="true"] .grid-card .thumbnail-section {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  overflow: hidden;
+}
+
+html[data-svt-rounded-cards="true"] .grid-card .scene-card-preview-image,
+html[data-svt-rounded-cards="true"] .grid-card .scene-card-preview-video,
+html[data-svt-rounded-cards="true"] .grid-card .performer-card-image,
+html[data-svt-rounded-cards="true"] .grid-card .gallery-card-image,
+html[data-svt-rounded-cards="true"] .grid-card .image-card-preview-image,
+html[data-svt-rounded-cards="true"] .grid-card .studio-card-image,
+html[data-svt-rounded-cards="true"] .grid-card .tag-card-image,
+html[data-svt-rounded-cards="true"] .grid-card .group-card-image {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}

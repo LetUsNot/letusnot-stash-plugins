@@ -1,0 +1,10 @@
+name: Stash Visual Tweaks
+description: Visual tweaks for Stash cards — star ratings, right-aligned count icons, rounded cards, and optional max row counts for scenes, performers, and groups.
+version: 1.4.0
+url: https://github.com/LetUsNot/stashvisualtweaks
+
+ui:
+  css:
+    - stashvisualtweaks.css
+  javascript:
+    - stashvisualtweaks.js
