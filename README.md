@@ -20,6 +20,7 @@ A [Stash](https://github.com/stashapp/stash) plugin **source index** for UI plug
 | **Stashangle** | Rotate and scale video during scene marker playback | [stashangle](https://github.com/LetUsNot/stashangle) |
 | **StashSelectRandom** | Jump to a random item from the current filtered list | [stash-select-random](https://github.com/LetUsNot/stash-select-random) |
 | **Stash Title Case** | Hover-revealed title case button on the scene edit title field | [stashtitlecase](https://github.com/LetUsNot/stashtitlecase) |
+| **emplink** | Empornium search link icon next to the favorite heart on performer pages | [emplink](https://github.com/LetUsNot/emplink) |
 
 ## Maintainer workflow
 
@@ -54,7 +55,7 @@ Output lands in `_site/main/` (`index.yml` plus `*.zip` files).
 
 1. Confirm the index loads: open `https://letusnot.github.io/letusnot-stash-plugins/main/index.yml` in a browser.
 2. In Stash: **Settings → Plugins → Add Source** (URL above) → **Reload Plugins**.
-3. All four plugins should appear under **Available Plugins** for this source.
+3. All plugins should appear under **Available Plugins** for this source.
 
 ## License
 

@@ -8,9 +8,19 @@ const root = path.resolve(__dirname, "..");
 const pluginsRoot = path.join(root, "plugins");
 const stashPluginsDir = path.resolve(root, "..");
 
-const PLUGIN_ASSETS = [".yml", ".js", ".css"];
+const PLUGIN_ASSETS = [".yml", ".js", ".css", ".ico"];
 
-function copyMatchingFiles(srcDir, destDir, { prefix, transformYml } = {}) {
+function shouldCopyFile(entry, { prefix, include } = {}) {
+  if (include?.includes(entry)) {
+    return true;
+  }
+  if (!prefix || !entry.startsWith(prefix)) {
+    return false;
+  }
+  return PLUGIN_ASSETS.includes(path.extname(entry));
+}
+
+function copyMatchingFiles(srcDir, destDir, { prefix, include, transformYml } = {}) {
   if (!existsSync(srcDir)) {
     throw new Error(`Source directory not found: ${srcDir}`);
   }
@@ -21,9 +31,9 @@ function copyMatchingFiles(srcDir, destDir, { prefix, transformYml } = {}) {
   for (const entry of readdirSync(srcDir)) {
     if (entry.startsWith(".")) continue;
 
+    if (!shouldCopyFile(entry, { prefix, include })) continue;
+
     const ext = path.extname(entry);
-    if (!PLUGIN_ASSETS.includes(ext)) continue;
-    if (prefix && !entry.startsWith(prefix)) continue;
 
     const src = path.join(srcDir, entry);
     if (!statSync(src).isFile()) continue;
@@ -89,6 +99,14 @@ const copies = [
     mode: "assets",
     prefix: "stash_select_random",
     transformYml: fixSelectRandomUrl
+  },
+  {
+    name: "emplink",
+    src: path.join(stashPluginsDir, "emplink"),
+    dest: path.join(pluginsRoot, "emplink"),
+    mode: "assets",
+    prefix: "emplink",
+    include: ["favicon.ico"]
   }
 ];
 
@@ -98,6 +116,7 @@ for (const plugin of copies) {
   console.log(`[sync] ${plugin.name}`);
   copyMatchingFiles(plugin.src, plugin.dest, {
     prefix: plugin.prefix,
+    include: plugin.include,
     transformYml: plugin.transformYml
   });
 }
