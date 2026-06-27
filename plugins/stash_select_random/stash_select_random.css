@@ -1,0 +1,9 @@
+.filtered-random-btn .minimal {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.filtered-random-btn .minimal:disabled {
+  opacity: 0.5;
+}

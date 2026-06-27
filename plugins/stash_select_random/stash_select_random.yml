@@ -1,0 +1,10 @@
+name: StashSelectRandom
+description: Jump to a random item from the current filtered list (scenes, performers, images, and more). Button sits to the left of Donate in the navbar.
+version: 1.1.0
+url: https://github.com/LetUsNot/stash-select-random
+ui:
+  requires: []
+  javascript:
+    - stash_select_random.js
+  css:
+    - stash_select_random.css
