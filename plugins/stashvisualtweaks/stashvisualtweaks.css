@@ -4,6 +4,7 @@
  * 1. Replaces the diagonal red/orange rating ribbon on cards with gold star
  *    icons styled like the performer detail page rating control.
  * 2. Right-aligns card popover icons (scene count, o-count, tag count, etc.).
+ * 3. Shows scene resolution, duration, and FPS on the card footer (left).
  */
 
 :root {
@@ -154,6 +155,78 @@
 .card-popovers .btn .fa-icon:only-child,
 .scene-popovers .btn .fa-icon:only-child {
   margin-right: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Scene specs — bottom-left footer row with popover icons (right)          */
+/* -------------------------------------------------------------------------- */
+
+/* Stock overlay on the thumbnail — footer row replaces it */
+.scene-card .scene-card-link .scene-specs-overlay {
+  display: none !important;
+}
+
+.scene-card.grid-card {
+  --svt-scene-footer-bottom: 5px;
+  --svt-scene-footer-height: 1.75rem;
+  position: relative;
+}
+
+/* Match popover row height so specs and icons share a center line */
+.scene-card .card-popovers,
+.scene-card .scene-popovers {
+  align-items: center !important;
+  box-sizing: border-box;
+  min-height: var(--svt-scene-footer-height);
+  padding-right: 1rem;
+}
+
+.scene-card .card-popovers .btn,
+.scene-card .scene-popovers .btn {
+  align-items: center;
+  display: inline-flex;
+  line-height: 1;
+  padding-bottom: 0.15rem;
+  padding-top: 0.15rem;
+}
+
+.scene-card .card-popovers .fa-icon,
+.scene-card .scene-popovers .fa-icon {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.scene-card .svt-scene-card-specs {
+  align-items: center;
+  bottom: var(--svt-scene-footer-bottom);
+  box-sizing: border-box;
+  color: var(--text-color, #f5f8fa);
+  display: inline-flex;
+  font-size: inherit;
+  font-weight: 400;
+  height: var(--svt-scene-footer-height);
+  left: 1rem;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 0 0 3px #000;
+  transform: translateY(-2px);
+  white-space: nowrap;
+  z-index: 3;
+}
+
+.svt-scene-card-specs .svt-specs-divider {
+  font-weight: 400;
+  margin: 0 0.35rem;
+  opacity: 0.9;
+}
+
+.scene-card .svt-scene-card-specs .overlay-resolution {
+  display: inline !important;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 /* -------------------------------------------------------------------------- */

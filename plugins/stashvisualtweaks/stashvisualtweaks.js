@@ -4,6 +4,7 @@
   const PluginApi = window.PluginApi;
   const React = PluginApi.React;
   const { Form } = PluginApi.libraries.Bootstrap;
+  const Intl = PluginApi.libraries.Intl;
 
   const PLUGIN_ID = "stashvisualtweaks";
   const LEGACY_SCENE_ROW_KEY = "maxSceneRowCount";
@@ -164,6 +165,138 @@
     }
 
     return maxUsableWidth / maxElementsOnRow - cardMargin;
+  }
+
+  /** Matches Stash TextUtils.resolution (scene page / overlay labels). */
+  function formatVideoResolution(width, height) {
+    const number = width > height ? height : width;
+    if (number >= 6144) return "HUGE";
+    if (number >= 3840) return "8K";
+    if (number >= 3584) return "7K";
+    if (number >= 3000) return "6K";
+    if (number >= 2560) return "5K";
+    if (number >= 1920) return "4K";
+    if (number >= 1440) return "1440p";
+    if (number >= 1080) return "1080p";
+    if (number >= 720) return "720p";
+    if (number >= 540) return "540p";
+    if (number >= 480) return "480p";
+    if (number >= 360) return "360p";
+    if (number >= 240) return "240p";
+    if (number >= 144) return "144p";
+    return undefined;
+  }
+
+  function formatDuration(seconds) {
+    if (typeof seconds !== "number" || !Number.isFinite(seconds) || seconds <= 0) {
+      return null;
+    }
+
+    let total = Math.trunc(seconds);
+    const s = total % 60;
+    total = (total - s) / 60;
+    const m = total % 60;
+    total = (total - m) / 60;
+    const h = total;
+
+    let ret = String(s).padStart(2, "0");
+    if (h === 0) {
+      ret = `${m}:${ret}`;
+    } else {
+      ret = `${String(m).padStart(2, "0")}:${ret}`;
+      ret = `${h}:${ret}`;
+    }
+    return ret;
+  }
+
+  function formatSceneFrameRate(intl, frameRate) {
+    if (typeof frameRate !== "number" || !Number.isFinite(frameRate)) {
+      return null;
+    }
+
+    if (intl?.formatMessage) {
+      return intl.formatMessage(
+        { id: "frames_per_second" },
+        { value: intl.formatNumber(frameRate) }
+      );
+    }
+
+    return `${frameRate} fps`;
+  }
+
+  function SceneCardSpecsFooter({ file }) {
+    const intl = Intl.useIntl();
+    const fpsText = formatSceneFrameRate(intl, file?.frame_rate);
+    const resolution =
+      file?.width && file?.height
+        ? formatVideoResolution(file.width, file.height)
+        : undefined;
+    const durationText = formatDuration(file?.duration);
+
+    const segments = [];
+    if (resolution) {
+      segments.push({
+        key: "resolution",
+        className: "overlay-resolution",
+        text: resolution,
+      });
+    }
+    if (durationText) {
+      segments.push({
+        key: "duration",
+        className: "overlay-duration",
+        text: durationText,
+      });
+    }
+    if (fpsText) {
+      segments.push({
+        key: "fps",
+        className: "overlay-frame-rate frame-rate",
+        text: fpsText,
+      });
+    }
+
+    if (segments.length === 0) {
+      return null;
+    }
+
+    const parts = [];
+    segments.forEach((segment, index) => {
+      if (index > 0) {
+        parts.push(
+          React.createElement(
+            "span",
+            { className: "svt-specs-divider", key: `divider-${index}` },
+            "|"
+          )
+        );
+      }
+      parts.push(
+        React.createElement(
+          "span",
+          { className: segment.className, key: segment.key },
+          segment.text
+        )
+      );
+    });
+
+    return React.createElement(
+      "div",
+      { className: "svt-scene-card-specs" },
+      parts
+    );
+  }
+
+  function sceneFileHasSpecs(file) {
+    if (!file) {
+      return false;
+    }
+
+    return (
+      (typeof file.frame_rate === "number" && Number.isFinite(file.frame_rate)) ||
+      (file.width && file.height) ||
+      (typeof file.duration === "number" && file.duration > 0)
+    );
   }
 
   function isMobile() {
@@ -391,6 +524,39 @@
     }
 
     return React.createElement(PluginSettingsPanel);
+  });
+
+  PluginApi.patch.instead("SceneCard.SceneSpecs", function () {
+    return null;
+  });
+
+  /*
+   * Scene card specs: inject via Details only — never patch SceneCard.Popovers.
+   * Popovers after/instead patches receive {} (or otherwise invalid output) on
+   * current Stash builds and crash the scene list with React error #31.
+   * Alignment is CSS-only (absolute footer on .scene-card.grid-card).
+   */
+  PluginApi.patch.after("SceneCard.Details", function (props, result) {
+    if (props.compact) {
+      return result;
+    }
+
+    const file = props.scene?.files?.[0];
+    if (!sceneFileHasSpecs(file)) {
+      return result;
+    }
+
+    const specs = React.createElement(SceneCardSpecsFooter, { file });
+
+    if (result == null || result === false) {
+      return specs;
+    }
+
+    if (React.isValidElement(result)) {
+      return React.createElement(React.Fragment, null, result, specs);
+    }
+
+    return specs;
   });
 
   PluginApi.patch.before("SceneCard", function (props) {
