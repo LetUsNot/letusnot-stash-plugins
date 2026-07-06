@@ -1,0 +1,50 @@
+name: Sync plugin packages
+
+on:
+  repository_dispatch:
+    types: [plugin-updated]
+  workflow_dispatch:
+
+concurrency:
+  group: sync-plugin-index
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Sync plugins from GitHub
+        run: npm run sync:ci
+
+      - name: Commit and push as LetUsNot
+        env:
+          PLUGIN_REPO: ${{ github.event.client_payload.plugin }}
+        run: |
+          git config user.name "LetUsNot"
+          git config user.email "112114066+LetUsNot@users.noreply.github.com"
+          git add plugins/
+          if git diff --staged --quiet; then
+            echo "No plugin package changes to publish."
+            exit 0
+          fi
+          if [ -n "$PLUGIN_REPO" ]; then
+            msg="Sync plugin index after ${PLUGIN_REPO} update."
+          else
+            msg="Sync plugin index from manual dispatch."
+          fi
+          git commit -m "$msg"
+          git pull --rebase origin main
+          git push

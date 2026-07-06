@@ -5,6 +5,7 @@
   "description": "Stash plugin source index for LetUsNot plugins.",
   "scripts": {
     "sync": "node scripts/sync-plugins.mjs",
+    "sync:ci": "node scripts/sync-plugins.mjs --ci",
     "build:site": "bash build_site.sh _site/main"
   }
 }
